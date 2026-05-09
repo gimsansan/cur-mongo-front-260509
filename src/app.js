@@ -15,6 +15,13 @@ function sendBadRequest(res, message) {
   });
 }
 
+function sendNotFound(res, message) {
+  return res.status(404).json({
+    message: "Not Found",
+    error: message,
+  });
+}
+
 function nextTaskId() {
   const maxId = tasks.reduce((max, task) => Math.max(max, task.id), 0);
   return maxId + 1;
@@ -33,6 +40,23 @@ app.get("/api/tasks", (req, res) => {
     message: "GET /api/tasks success",
     data: tasks,
     title: title,
+  });
+});
+
+app.get("/api/tasks/:id", (req, res) => {
+  const idNum = Number.parseInt(req.params.id, 10);
+  if (Number.isNaN(idNum)) {
+    return sendNotFound(res, "Task not found");
+  }
+
+  const task = tasks.find((t) => t.id === idNum);
+  if (!task) {
+    return sendNotFound(res, "Task not found");
+  }
+
+  res.status(200).json({
+    message: "GET /api/tasks/:id success",
+    data: task,
   });
 });
 
