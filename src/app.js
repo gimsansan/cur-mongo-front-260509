@@ -15,6 +15,11 @@ function sendBadRequest(res, message) {
   });
 }
 
+function nextTaskId() {
+  const maxId = tasks.reduce((max, task) => Math.max(max, task.id), 0);
+  return maxId + 1;
+}
+
 app.get("/", (req, res) => {
   res.json({
     message: "Express server is running",
@@ -48,11 +53,12 @@ app.post("/api/tasks", (req, res) => {
     return sendBadRequest(res, "title length must be between 1 and 100");
   }
 
-  res.status(201).json({  
-    message: "POST /api/tasks success", 
-    data: {
-      title: normalizedTitle,
-    },
+  const newTask = { id: nextTaskId(), title: normalizedTitle };
+  tasks.push(newTask);
+
+  res.status(201).json({
+    message: "POST /api/tasks success",
+    data: newTask,
   });
 });
 
