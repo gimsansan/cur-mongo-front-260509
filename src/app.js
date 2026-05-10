@@ -121,4 +121,23 @@ app.put("/api/tasks/:id", (req, res) => {
   });
 });
 
+app.delete("/api/tasks/:id", (req, res) => {
+  const idNum = Number.parseInt(req.params.id, 10);
+  if (Number.isNaN(idNum)) {
+    return sendNotFound(res, "Task not found");
+  }
+
+  const idx = tasks.findIndex((t) => t.id === idNum);
+  if (idx === -1) {
+    return sendNotFound(res, "Task not found");
+  }
+
+  const [removed] = tasks.splice(idx, 1);
+
+  res.status(200).json({
+    message: "DELETE /api/tasks/:id success",
+    data: removed,
+  });
+});
+
 module.exports = app;
