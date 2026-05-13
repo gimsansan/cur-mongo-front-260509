@@ -27,6 +27,24 @@ function nextTaskId() {
   return maxId + 1;
 }
 
+function validateTitle(title) {
+  if (title === undefined) {
+    return { error: "title is required" };
+  }
+
+  if (typeof title !== "string") {
+    return { error: "title must be a string" };
+  }
+
+  const normalizedTitle = title.trim();
+
+  if (normalizedTitle.length < 1 || normalizedTitle.length > 100) {
+    return { error: "title length must be between 1 and 100" };
+  }
+
+  return { value: normalizedTitle };
+}
+
 app.get("/", (req, res) => {
   res.json({
     message: "Express server is running",
@@ -63,18 +81,9 @@ app.get("/api/tasks/:id", (req, res) => {
 app.post("/api/tasks", (req, res) => {
   const { title } = req.body || {};
 
-  if (title === undefined) {
-    return sendBadRequest(res, "title is required");
-  }
-
-  if (typeof title !== "string") {
-    return sendBadRequest(res, "title must be a string");
-  }
-
-  const normalizedTitle = title.trim();//공백제거
-
-  if (normalizedTitle.length < 1 || normalizedTitle.length > 100) { // 제목 길이 검증 100자 이하 1자 이상 
-    return sendBadRequest(res, "title length must be between 1 and 100");
+  const { value: normalizedTitle, error } = validateTitle(title);
+  if (error) {
+    return sendBadRequest(res, error);
   }
 
   const newTask = { id: nextTaskId(), title: normalizedTitle };
@@ -99,18 +108,9 @@ app.put("/api/tasks/:id", (req, res) => {
 
   const { title } = req.body || {};
 
-  if (title === undefined) {
-    return sendBadRequest(res, "title is required");
-  }
-
-  if (typeof title !== "string") {
-    return sendBadRequest(res, "title must be a string");
-  }
-
-  const normalizedTitle = title.trim();//공백제거
-
-  if (normalizedTitle.length < 1 || normalizedTitle.length > 100) { // 제목 길이 검증 100자 이하 1자 이상 
-    return sendBadRequest(res, "title length must be between 1 and 100");
+  const { value: normalizedTitle, error } = validateTitle(title);
+  if (error) {
+    return sendBadRequest(res, error);
   }
 
   task.title = normalizedTitle;
