@@ -1,6 +1,6 @@
-const express = require("express");
+const express = require("express");//모듈 가져오기
 
-const app = express();
+const app = express();//express()로 만든  앱 인스턴스  :라우팅,미들웨어 등 기능 들어감
 app.use(express.json());
 app.set('json spaces', 2);
 const tasks = [
